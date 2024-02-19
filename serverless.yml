@@ -1,0 +1,131 @@
+
+service: serverless-nutri-backend
+frameworkVersion: "3"
+
+# plugins:
+#   - serverless-offline
+#  - serverless-domain-manager
+
+# custom:
+#   allowedHeaders:
+#     - Accept
+#     - Content-Type
+#     - Content-Length
+#     - Authorization
+#     - X-Amz-Date
+#     - X-Api-Key
+#     - X-Amz-Security-Token
+#     - X-Amz-User-Agent
+#     - app_user_id
+#     - app_user_name
+#  customDomain:
+#    domainName: api.notesapp.xyz
+#    basePath: "v1"
+#    stage: ${self:provider.stage}
+#    certificateName: notesapp.xyz
+#    createRoute53Record: true
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  stage: prod
+  memorySize: 128
+  timeout: 5
+  endpointType: REGIONAL
+  environment:
+    PRODUCE_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iam:
+    role: arn:aws:iam::471112868617:role/LabRole
+      
+
+# functions:
+#   add-note:
+#     handler: api/add-note.handler
+#     description: POST /note
+#     events:
+#       - http:
+#           path: note
+#           method: post
+#           cors:
+#             origin: "*"
+#             headers: ${self:custom.allowedHeaders}
+
+#   update-note:
+#     handler: api/update-note.handler
+#     description: PATCH /note
+#     events:
+#       - http:
+#           path: note
+#           method: patch
+#           cors:
+#             origin: "*"
+#             headers: ${self:custom.allowedHeaders}
+
+#   get-notes:
+#     handler: api/get-notes.handler
+#     description: GET /notes
+#     events:
+#       - http:
+#           path: notes
+#           method: get
+#           cors:
+#             origin: "*"
+#             headers: ${self:custom.allowedHeaders}
+
+#   get-note:
+#     handler: api/get-note.handler
+#     description: GET /note/n/{note_id}
+#     events:
+#       - http:
+#           path: note/n/{note_id}
+#           method: get
+#           cors:
+#             origin: "*"
+#             headers: ${self:custom.allowedHeaders}
+
+#   delete-note:
+#     handler: api/delete-note.handler
+#     description: DELETE /note
+#     events:
+#       - http:
+#           path: note/t/{timestamp}
+#           method: delete
+#           cors:
+#             origin: "*"
+#             headers: ${self:custom.allowedHeaders}
+
+resources:
+  Resources:
+    NotesTable:
+      Type: AWS::DynamoDB::Table
+      DeletionPolicy: Retain
+      Properties:
+        TableName: ${self:provider.environment.PRODUCE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: foodName  # HASH key for the GSI
+            AttributeType: S
+          - AttributeName: category  # Adding sort key for the GSI
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH  # partition key
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        GlobalSecondaryIndexes:
+          - IndexName: FoodNameIndex
+            KeySchema:
+              - AttributeName: foodName
+                KeyType: HASH  # HASH key for the GSI
+              - AttributeName: category
+                KeyType: RANGE  # sort key for the GSI
+            Projection:
+              ProjectionType: ALL
+            ProvisionedThroughput:
+              ReadCapacityUnits: 1
+              WriteCapacityUnits: 1
+
+
