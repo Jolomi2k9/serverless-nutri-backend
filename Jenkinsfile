@@ -90,16 +90,16 @@ pipeline {
         //     }
         // }       
 
-        stage("Deploy") {
-            steps {                
-                script {
-                    sh """
-                    #!/bin/bash
-                    sed -i 's/VERSION_PLACEHOLDER/${version}/g' deployment.yaml
-                    ./deploy.sh
-                    """                                 
-                }                                
-            }
-        }    
+        // stage("Deploy") {
+        //     steps {                
+        //         script {
+        //             sh """
+        //             #!/bin/bash
+        //             sed -i 's/VERSION_PLACEHOLDER/${version}/g' deployment.yaml
+        //             ./deploy.sh
+        //             """                                 
+        //         }                                
+        //     }
+        // }    
     }
 }
