@@ -10,32 +10,37 @@ pipeline {
     stages {
         stage('Setup Node.js') {
             steps {
-                // Use Node Version Manager (nvm) to install Node.js if it's not already available
+                // Source NVM and install Node.js
                 sh '''
-                if [ ! -d "$HOME/.nvm" ]; then
-                    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-                fi
                 export NVM_DIR="$HOME/.nvm"
                 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                 nvm install 16
                 nvm use 16
+                node --version
+                npm --version
                 '''
-                // Check node version
-                sh 'node --version'
-                // Check npm version
-                sh 'npm --version'
             }
         }
         stage('Install Serverless CLI') {
             steps {
-                // Install Serverless Framework CLI
-                sh 'npm install -g serverless'
+                // Source NVM and install Serverless Framework CLI
+                sh '''
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                npm install -g serverless
+                serverless --version
+                '''
             }
         }
         stage('Deploy Serverless Application') {
             steps {
-                // Deploy using serverless command
-                sh 'serverless deploy -v'
+                // Source NVM and deploy using serverless command
+                sh '''
+                export NVM_DIR="$HOME/.nvm"
+                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                nvm use 16
+                serverless deploy -v
+                '''
             }
         }
     }
