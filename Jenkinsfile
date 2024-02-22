@@ -6,7 +6,6 @@ pipeline {
             label 'deployment-server'
         }
     }
-
     stages {
     //     stage('Setup Node.js') {
     //         steps {
