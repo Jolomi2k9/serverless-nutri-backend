@@ -93,7 +93,7 @@ pipeline {
                         export NVM_DIR="$HOME/.nvm" 
                         [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                         nvm use 16
-                        // Export AWS credentials including session token into the environment
+                        
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
