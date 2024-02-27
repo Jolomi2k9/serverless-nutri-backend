@@ -7,18 +7,18 @@ frameworkVersion: "3"
 #   - serverless-offline
 #  - serverless-domain-manager
 
-# custom:
-#   allowedHeaders:
-#     - Accept
-#     - Content-Type
-#     - Content-Length
-#     - Authorization
-#     - X-Amz-Date
-#     - X-Api-Key
-#     - X-Amz-Security-Token
-#     - X-Amz-User-Agent
-#     - app_user_id
-#     - app_user_name
+custom:
+  allowedHeaders:
+    - Accept
+    - Content-Type
+    - Content-Length
+    - Authorization
+    - X-Amz-Date
+    - X-Api-Key
+    - X-Amz-Security-Token
+    - X-Amz-User-Agent
+    - app_id
+    - app_food_name
 #  customDomain:
 #    domainName: api.notesapp.xyz
 #    basePath: "v1"
@@ -40,61 +40,62 @@ provider:
     role: arn:aws:iam::471112868617:role/LabRole
       
 
-# functions:
-#   add-note:
-#     handler: api/add-note.handler
-#     description: POST /note
-#     events:
-#       - http:
-#           path: note
-#           method: post
-#           cors:
-#             origin: "*"
-#             headers: ${self:custom.allowedHeaders}
+functions:
+  add-food:
+    handler: api/add-food.handler
+    description: Adds a food item to the DynamoDB table.
+    events:
+      - http:
+          path: food
+          method: post
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE} 
+  
+  update-food:
+    handler: api/update-food.handler
+    description: Updates a food item in the DynamoDB table.
+    events:
+      - http:
+          path: food/{id} 
+          method: patch  
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
-#   update-note:
-#     handler: api/update-note.handler
-#     description: PATCH /note
-#     events:
-#       - http:
-#           path: note
-#           method: patch
-#           cors:
-#             origin: "*"
-#             headers: ${self:custom.allowedHeaders}
 
-#   get-notes:
-#     handler: api/get-notes.handler
-#     description: GET /notes
-#     events:
-#       - http:
-#           path: notes
-#           method: get
-#           cors:
-#             origin: "*"
-#             headers: ${self:custom.allowedHeaders}
+  get-foods:
+    handler: api/get-foods.handler
+    description: GET /foods
+    events:
+      - http:
+          path: foods
+          method: get
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
-#   get-note:
-#     handler: api/get-note.handler
-#     description: GET /note/n/{note_id}
-#     events:
-#       - http:
-#           path: note/n/{note_id}
-#           method: get
-#           cors:
-#             origin: "*"
-#             headers: ${self:custom.allowedHeaders}
+  get-food:
+    handler: api/get-food.handler
+    description: GET /food/n/{food_id}
+    events:
+      - http:
+          path: food/n/{food_id}
+          method: get
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
-#   delete-note:
-#     handler: api/delete-note.handler
-#     description: DELETE /note
-#     events:
-#       - http:
-#           path: note/t/{timestamp}
-#           method: delete
-#           cors:
-#             origin: "*"
-#             headers: ${self:custom.allowedHeaders}
+  delete-food:
+    handler: api/delete-food.handler
+    description: DELETE /food
+    events:
+      - http:
+          path: food/{id} 
+          method: delete
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
 resources:
   Resources:
