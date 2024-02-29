@@ -86,6 +86,17 @@ functions:
     environment:
       PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
+  get-food-names:
+    handler: api/get-food-names.handler
+    description: Returns the names of all food items.
+    events:
+      - http:
+          path: foods/names
+          method: get
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
+
   delete-food:
     handler: api/delete-food.handler
     description: DELETE /food
@@ -96,6 +107,31 @@ functions:
           cors: true
     environment:
       PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
+
+  validate-request:
+    handler: api/validate-request.handler
+    package:
+      include:
+        - node_modules/didyoumean2/**
+        - api/validate-request.mjs
+    events:
+      - http:
+          path: validate-request
+          method: post
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
+  
+  sqsPoller:
+    handler: api/sqsPoller.handler
+    environment:
+      STATE_MACHINE_ARN: { Ref: 'MyStateMachine' } 
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - MyQueue
+              - Arn
 
 resources:
   Resources:
@@ -129,5 +165,92 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
+
+    StateMachineExecutionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: states.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: AllowLambdaInvocation
+            PolicyDocument:
+              Version: '2012-10-17'
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - lambda:InvokeFunction
+                  Resource: "*"
+    
+    MyStateMachine:
+      Type: "AWS::StepFunctions::StateMachine"
+      Properties:
+        RoleArn: !GetAtt StateMachineExecutionRole.Arn
+        DefinitionString: 
+          Fn::Sub: |
+            {
+              "Comment": "Function orchestration",
+              "StartAt": "ValidateOrList",
+              "States": {
+                "ValidateOrList": {
+                  "Type": "Choice",
+                  "Choices": [
+                    {
+                      "Variable": "$.input",
+                      "StringEquals": "",
+                      "Next": "GetFoodNames"
+                    }
+                  ],
+                  "Default": "ValidateRequest"
+                },
+                "GetFoodNames": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${self:service}-${self:provider.stage}-get-food-names",
+                  "End": true
+                },
+                "ValidateRequest": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${self:service}-${self:provider.stage}-validate-request",
+                  "Next": "FetchDetailsOrError"
+                },
+                "FetchDetailsOrError": {
+                  "Type": "Choice",
+                  "Choices": [
+                    {
+                      "Variable": "$.valid",
+                      "BooleanEquals": true,
+                      "Next": "FetchFoodDetails"
+                    }
+                  ],
+                  "Default": "ValidationError"
+                },
+                "FetchFoodDetails": {
+                  "Type": "Task",
+                  "Resource": "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${self:service}-${self:provider.stage}-get-food",
+                  "End": true
+                },
+                "ValidationError": {
+                  "Type": "Fail",  
+                  "Error": "InvalidInput",
+                  "Cause": "Input failed validation"
+                }
+              }
+            }
+
+    MyQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: ${self:service}-queue-${self:provider.stage}
+        VisibilityTimeout: 100
+
+
+  
+
+
+
 
 
