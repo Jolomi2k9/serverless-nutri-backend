@@ -165,31 +165,11 @@ resources:
             ProvisionedThroughput:
               ReadCapacityUnits: 1
               WriteCapacityUnits: 1
-
-    StateMachineExecutionRole:
-      Type: AWS::IAM::Role
-      Properties:
-        AssumeRolePolicyDocument:
-          Version: '2012-10-17'
-          Statement:
-            - Effect: Allow
-              Principal:
-                Service: states.amazonaws.com
-              Action: sts:AssumeRole
-        Policies:
-          - PolicyName: AllowLambdaInvocation
-            PolicyDocument:
-              Version: '2012-10-17'
-              Statement:
-                - Effect: Allow
-                  Action:
-                    - lambda:InvokeFunction
-                  Resource: "*"
     
     MyStateMachine:
       Type: "AWS::StepFunctions::StateMachine"
       Properties:
-        RoleArn: !GetAtt StateMachineExecutionRole.Arn
+        RoleArn: arn:aws:iam::471112868617:role/LabRole
         DefinitionString: 
           Fn::Sub: |
             {
