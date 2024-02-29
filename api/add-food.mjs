@@ -18,6 +18,7 @@ export const handler = async (event) => {
     const item = JSON.parse(event.body);
     item.id = uuidv4(); // Generate a new UUID for the food item
     item.expires = moment().add(60, "days").unix(); // Set expiry 60 days from now
+    
 
     // assign foodName and category from the request body
     item.foodName = item.foodName; 
