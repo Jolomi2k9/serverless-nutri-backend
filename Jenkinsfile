@@ -86,6 +86,6 @@ pipeline {
     //     failure {
     //         echo 'Deployment failed. Check the logs for errors.'
     //     }
-    // }
+    }
 }
 
