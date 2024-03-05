@@ -34,7 +34,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Serverless Application') { 
+        stage('Remove Serverless Application') { 
             steps {               
                 // Inject AWS credentials securely
                 withCredentials([
@@ -51,19 +51,41 @@ pipeline {
                         export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
                         export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
                         export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
-                        serverless deploy  
+                        serverless remove  
                     ''' 
                 }
             } 
         }
-    }
-    post {
-        success {
-            echo 'Deployment complete!'
-        }
-        failure {
-            echo 'Deployment failed. Check the logs for errors.'
-        }
-    }
+    //     stage('Deploy Serverless Application') { 
+    //         steps {               
+    //             // Inject AWS credentials securely
+    //             withCredentials([
+    //                 [$class: 'StringBinding', credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'],
+    //                 [$class: 'StringBinding', credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY'],
+    //                 [$class: 'StringBinding', credentialsId: 'aws-session-token-id', variable: 'AWS_SESSION_TOKEN']
+    //             ]) {
+    //                 // Eexecute deployment with Serverless Framework and pass in aws login credentials 
+    //                 sh ''' 
+    //                     export NVM_DIR="$HOME/.nvm" 
+    //                     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+    //                     nvm use 16
+                        
+    //                     export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+    //                     export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    //                     export AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+    //                     serverless deploy  
+    //                 ''' 
+    //             }
+    //         } 
+    //     }
+    // }
+    // post {
+    //     success {
+    //         echo 'Deployment complete!'
+    //     }
+    //     failure {
+    //         echo 'Deployment failed. Check the logs for errors.'
+    //     }
+    // }
 }
 
