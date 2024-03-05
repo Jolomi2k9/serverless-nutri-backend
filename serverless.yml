@@ -77,10 +77,10 @@ functions:
 
   get-food:
     handler: api/get-food.handler
-    description: GET /food/n/{food_id}
+    description: GET /food/n/{foodName}
     events:
       - http:
-          path: food/n/{food_id}
+          path: food/n/{foodName}
           method: get
           cors: true
     environment:

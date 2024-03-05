@@ -19,7 +19,7 @@ export const handler = async (event) => {
     const params = {
       TableName: tableName,
       Key: {
-        id: id, // Assuming 'id' is the primary key for your table
+        id: id, 
       },
     };
 
