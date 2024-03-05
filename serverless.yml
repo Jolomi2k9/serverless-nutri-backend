@@ -226,10 +226,7 @@ resources:
       Properties:
         QueueName: ${self:service}-queue-${self:provider.stage}
         VisibilityTimeout: 100
-
-
-  
-
+        
 
 
 
