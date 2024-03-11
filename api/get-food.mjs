@@ -1,6 +1,6 @@
 
 /**
- * Route: GET /food/n/{id}
+ * Route: GET /food/n/{food}
  */
 
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";

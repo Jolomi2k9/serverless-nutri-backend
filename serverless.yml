@@ -57,7 +57,7 @@ functions:
     description: Updates a food item in the DynamoDB table.
     events:
       - http:
-          path: food/{id} 
+          path: food/n/{foodName} 
           method: patch  
           cors: true
     environment:
@@ -66,7 +66,7 @@ functions:
 
   get-foods:
     handler: api/get-foods.handler
-    description: GET /foods
+    description: GET a specific food item
     events:
       - http:
           path: foods
@@ -77,7 +77,7 @@ functions:
 
   get-food:
     handler: api/get-food.handler
-    description: GET /food/n/{foodName}
+    description: GET a specific food item
     events:
       - http:
           path: food/n/{foodName}
@@ -99,7 +99,7 @@ functions:
 
   delete-food:
     handler: api/delete-food.handler
-    description: DELETE /food
+    description: DELETE specific food items
     events:
       - http:
           path: food/{id} 
@@ -132,6 +132,17 @@ functions:
             Fn::GetAtt:
               - MyQueue
               - Arn
+
+  get-all-foods:
+    handler: api/getAllFoods.handler 
+    description: Returns all food items in the DynamoDB table.
+    events:
+      - http:
+          path: foods/all
+          method: get
+          cors: true
+    environment:
+      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
 resources:
   Resources:

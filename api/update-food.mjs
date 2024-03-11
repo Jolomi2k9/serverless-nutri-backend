@@ -12,10 +12,9 @@ const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
 const tableName = process.env.PRODUCE_TABLE;
 
 export const handler = async (event) => {
-  const { id } = event.pathParameters; // Extracting the item's id from the path
-  const updateData = JSON.parse(event.body); // Assuming update attributes are in the request body
+  const foodName = decodeURIComponent(event.pathParameters.foodName); // Now using foodName
+  const updateData = JSON.parse(event.body); 
 
-  // Construct the update expression
   let updateExpression = "set";
   let ExpressionAttributeNames = {};
   let ExpressionAttributeValues = {};
@@ -29,7 +28,7 @@ export const handler = async (event) => {
   try {
     const updateCmd = new UpdateCommand({
       TableName: tableName,
-      Key: { id }, // Assuming 'id' is the primary key
+      Key: { foodName }, // Key is foodName
       UpdateExpression: updateExpression,
       ExpressionAttributeNames,
       ExpressionAttributeValues,
@@ -57,3 +56,4 @@ export const handler = async (event) => {
     };
   }
 };
+
