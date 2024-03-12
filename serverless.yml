@@ -53,16 +53,15 @@ functions:
       PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE} 
   
   update-food:
-    handler: api/update-food.handler
-    description: Updates a food item in the DynamoDB table.
-    events:
-      - http:
-          path: food/n/{foodName} 
-          method: patch  
-          cors: true
-    environment:
-      PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
-
+  handler: api/update-food.handler 
+  description: Updates a food item in the DynamoDB table by its ID.
+  events:
+    - http:
+        path: food/{id} 
+        method: patch
+        cors: true
+  environment:
+    PRODUCE_TABLE: ${self:provider.environment.PRODUCE_TABLE}
 
   get-foods:
     handler: api/get-foods.handler

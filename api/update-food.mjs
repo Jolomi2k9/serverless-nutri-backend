@@ -2,40 +2,41 @@
  * Route: PATCH /food
  */
 
+
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import * as util from "./util.mjs";
 
 const ddbClient = new DynamoDBClient({ region: "us-east-1" });
-const ddbDocClient = DynamoDBDocumentClient.from(ddbClient);
+const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 const tableName = process.env.PRODUCE_TABLE;
 
 export const handler = async (event) => {
-  const foodName = decodeURIComponent(event.pathParameters.foodName); // Now using foodName
+  const { id } = event.pathParameters; // Extracting the item id from the path
   const updateData = JSON.parse(event.body); 
 
   let updateExpression = "set";
-  let ExpressionAttributeNames = {};
-  let ExpressionAttributeValues = {};
+  let expressionAttributeNames = {};
+  let expressionAttributeValues = {};
   for (const property in updateData) {
     updateExpression += ` #${property} = :${property},`;
-    ExpressionAttributeNames[`#${property}`] = property;
-    ExpressionAttributeValues[`:${property}`] = updateData[property];
+    expressionAttributeNames[`#${property}`] = property;
+    expressionAttributeValues[`:${property}`] = updateData[property];
   }
   updateExpression = updateExpression.slice(0, -1); // Remove the trailing comma
 
   try {
     const updateCmd = new UpdateCommand({
       TableName: tableName,
-      Key: { foodName }, // Key is foodName
+      Key: { id }, // Use id as the primary key for update operation
       UpdateExpression: updateExpression,
-      ExpressionAttributeNames,
-      ExpressionAttributeValues,
+      ExpressionAttributeNames: expressionAttributeNames,
+      ExpressionAttributeValues: expressionAttributeValues,
       ReturnValues: "UPDATED_NEW",
     });
 
-    const data = await ddbDocClient.send(updateCmd);
+    const data = await docClient.send(updateCmd);
     console.log(`UpdateCommand response: ${JSON.stringify(data, null, 2)}`);
 
     return {
@@ -56,4 +57,5 @@ export const handler = async (event) => {
     };
   }
 };
+
 
