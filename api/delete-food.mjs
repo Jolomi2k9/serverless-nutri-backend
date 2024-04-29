@@ -26,15 +26,15 @@ export const handler = async (event) => {
     const deleteCmd = new DeleteCommand(params);
     await ddbDocClient.send(deleteCmd); 
 
-    console.log(`Item with ID ${id} deleted successfully.`);
+    console.log(`Item ${id} deleted .`);
 
     return {
       statusCode: 200,
       headers: util.getResponseHeaders(),
-      body: JSON.stringify({ message: `Item with ID ${id} deleted successfully.` }),
+      body: JSON.stringify({ message: `Item ${id} deleted .` }),
     };
   } catch (err) {
-    console.error(`Error occurred: ${JSON.stringify(err, null, 2)}`);
+    console.error(`Error : ${JSON.stringify(err, null, 2)}`);
 
     return {
       statusCode: err.statusCode ? err.statusCode : 500,

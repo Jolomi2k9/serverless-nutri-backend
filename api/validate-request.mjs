@@ -4,7 +4,7 @@ const didyoumean = require('didyoumean2').default;
 
 exports.handler = async (event) => {
   try {
-    // Fetch food names pre-processed as uppercase for efficiency
+    // Fetch food names as uppercase 
     let allFoodNames = await fetchFoodNames();
     allFoodNames = allFoodNames.map(name => name.toUpperCase());
 
@@ -17,10 +17,10 @@ exports.handler = async (event) => {
 
     const normalizedInputFoodName = inputFoodName.toUpperCase();
 
-    // Similarity Check with threshold
+    // Similarity Check 
     const maybeYouMeant = didyoumean(normalizedInputFoodName, allFoodNames, { 
       caseSensitive: false, 
-      threshold: 0.7 // Adjust as needed
+      threshold: 0.7 
     });
 
     if (maybeYouMeant) {
@@ -35,7 +35,7 @@ exports.handler = async (event) => {
     console.error("Error in validation:", error);
     return { 
       valid: false, 
-      error: error.message || 'An error occurred during validation' 
+      error: error.message || 'error during validation' 
     };
   }
 };

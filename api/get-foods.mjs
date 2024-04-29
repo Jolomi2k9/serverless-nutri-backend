@@ -21,10 +21,10 @@ export const handler = async (event) => {
       Limit: limit,
     };
 
-    // If there's a need to start from a specific item (pagination), use ExclusiveStartKey
+    
     if (query && query.startKey) {
       params.ExclusiveStartKey = {
-        id: query.startKey, // Assuming 'id' is your primary key; adjust if your table uses a different key
+        id: query.startKey, 
       };
     }
 
@@ -39,7 +39,7 @@ export const handler = async (event) => {
         items: data.Items,
         count: data.Count,
         scannedCount: data.ScannedCount,
-        lastEvaluatedKey: data.LastEvaluatedKey, // Use this for pagination
+        lastEvaluatedKey: data.LastEvaluatedKey, 
       }),
     };
   } catch (err) {

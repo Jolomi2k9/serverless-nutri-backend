@@ -7,7 +7,6 @@ exports.handler = async (event) => {
     const messageBody = JSON.parse(record.body);
 
     // Extract information needed to trigger the Step Function
-    // Example (assume messageBody has 'foodId'):
     const foodId = messageBody.foodId; 
 
     try {
@@ -18,7 +17,7 @@ exports.handler = async (event) => {
       }).promise();
       
     } catch (err) {
-      console.error("Error starting Step Function execution:", err);
+      console.error("Error Step Function :", err);
     }
   }
 };

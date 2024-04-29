@@ -29,7 +29,7 @@ export const handler = async (event) => {
   try {
     const updateCmd = new UpdateCommand({
       TableName: tableName,
-      Key: { id }, // Use id as the primary key for update operation
+      Key: { id }, // Use id as the primary key 
       UpdateExpression: updateExpression,
       ExpressionAttributeNames: expressionAttributeNames,
       ExpressionAttributeValues: expressionAttributeValues,
